@@ -9,6 +9,9 @@ import { SimpleMediasoupPeer } from "../libs/SimpleMediasoupPeer";
 import { Lobby } from "./lobby";
 
 let url = "https://afewdeepbreaths.livelab.app";
+// let url = "localhost:5000";
+
+
 let socket;
 let mediasoupPeer;
 let localCam;
@@ -22,7 +25,7 @@ let hasCompletedOnboarding = false;
 let hasInitializedCameraAccess = false;
 let broadcastIsActive = false;
 
-let videoIsTransformed = false;
+let rightHalfOfVideoShown = false;
 let videoEffectActive = false;
 
 let peers = {};
@@ -103,7 +106,7 @@ function init() {
 
   socket.on("videoEffect", (data) => {
     videoEffectActive = data;
-    if (videoEffectActive){
+    if (videoEffectActive) {
       showRightVideo();
     } else {
       showFullVideo();
@@ -153,8 +156,8 @@ function init() {
     }
   });
 
-  document.addEventListener("keydown", showLeftVideo);
-  document.addEventListener("keyup", showRightVideo);
+  document.addEventListener("keydown", (e)=> onKeyDown(e));
+  document.addEventListener("keyup", (e)=> onKeyUp(e));
 
   cameraPausedButton.addEventListener("click", () => {
     if (cameraPaused) {
@@ -233,31 +236,39 @@ function updateCurrentScene() {
 
 //*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//
 
-const showLeftVideo = (ev) => {
-  if (!videoEffectActive) return;
-  let videoEl = document.getElementById("broadcastVideo");
-  if (ev.key == " " && !videoIsTransformed) {
-    console.log("left");
-    videoEl.style.transform = "translateX(50%) scaleX(2)";
-    videoIsTransformed = true;
+
+const onKeyDown = (ev) => {
+  if (ev.key == " ") {
+    showLeftVideo();
   }
 };
 
-const showRightVideo = (ev) => {
-  if (!videoEffectActive) return;
-  let videoEl = document.getElementById("broadcastVideo");
-  if (ev.key == " " && videoIsTransformed) {
-    console.log("right");
-    videoEl.style.transform = "translateX(-50%) scaleX(2)";
-    videoIsTransformed = false;
+const onKeyUp = (ev) => {
+  if (ev.key == " ") {
+    showRightVideo();
   }
+}
+const showLeftVideo = () => {
+  if (!videoEffectActive || !rightHalfOfVideoShown) return;
+  let videoEl = document.getElementById("broadcastVideo");
+  console.log("left");
+  videoEl.style.transform = "translateX(50%) scaleX(2)";
+  rightHalfOfVideoShown = false;
+};
+
+const showRightVideo = () => {
+  if (!videoEffectActive || rightHalfOfVideoShown) return;
+  let videoEl = document.getElementById("broadcastVideo");
+  console.log("right");
+  videoEl.style.transform = "translateX(-50%) scaleX(2)";
+  rightHalfOfVideoShown = true;
 };
 
 const showFullVideo = () => {
   let videoEl = document.getElementById("broadcastVideo");
   console.log("Showing Full Video");
-  videoEl.style.transform = "";
-  videoIsTransformed = false;
+  videoEl.style.transform = "translateX(0%) scaleX(1)";
+  rightHalfOfVideoShown = false;
 };
 
 //*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//*//

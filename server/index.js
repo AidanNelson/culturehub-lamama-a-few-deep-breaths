@@ -10,6 +10,7 @@ var options = {
   key: fs.readFileSync("./certs/key.pem"),
   cert: fs.readFileSync("./certs/cert.pem"),
 };
+// let options = {};
 
 const server = http.createServer(options, app);
 const MediasoupManager = require("./MediasoupManager");

@@ -7,6 +7,10 @@ import { io } from "socket.io-client";
 import { SimpleMediasoupPeer } from "../libs/SimpleMediasoupPeer";
 
 let url = "https://afewdeepbreaths.livelab.app";
+// let url = "localhost:5000";
+
+
+
 let socket;
 let mediasoupPeer;
 
