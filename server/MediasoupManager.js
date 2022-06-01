@@ -195,6 +195,9 @@ class MediasoupManager {
       this.workers[i] = worker;
       this.routers[i] = router;
     }
+
+    // console.log(this.workers);
+    // console.log(this.routers);
   }
 
   getNewPeerRouterIndex() {
@@ -227,6 +230,47 @@ class MediasoupManager {
       this.peers[id].transports[transportId].close();
     }
     delete this.peers[id];
+  }
+
+  async addServerSideBroadcaster() {
+    this.peers["serverSideBroadcaster"] = {
+      routerIndex: this.getNewPeerRouterIndex(),
+      transports: {},
+      producers: {},
+      consumers: {},
+    };
+    console.log(this.peers);
+    const r = this.getRouterForPeer("serverSideBroadcaster");
+    console.log(r);
+    const transport = await r.createPlainTransport(
+      {
+        listenIp: config.mediasoup.plainTransportOptions.listenIp.ip,
+        rtcpMux: true,
+        comedia: true
+      });
+    console.log(transport.tuple);
+    console.log(transport.rtcpTuple);
+    const producer = await transport.produce({
+      kind: "video",
+      rtpParameters:
+      {
+        mid: "1",
+        codecs:
+          [
+            {
+              mimeType: "video/VP8",
+              payloadType: 101,
+              clockRate: 90000,
+      
+            }
+          ],
+        encodings:
+          [
+            {ssrc:2222}
+          ],
+      }
+    });
+    console.log(producer);
   }
 
   async startMediasoupWorker() {

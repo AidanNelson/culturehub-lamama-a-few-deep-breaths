@@ -1,18 +1,21 @@
 // HTTP Server setup:
 // https://stackoverflow.com/questions/27393705/how-to-resolve-a-socket-io-404-not-found-error
-const express = require("express"),
-  http = require("https");
+const express = require("express");
+const http = require("http");
+// const http = require("https");
 const app = express();
 let Datastore = require("nedb");
 
 var fs = require("fs");
-var options = {
-  key: fs.readFileSync("./certs/key.pem"),
-  cert: fs.readFileSync("./certs/cert.pem"),
-};
+// var options = {
+//   key: fs.readFileSync("./certs/key.pem"),
+//   cert: fs.readFileSync("./certs/cert.pem"),
+// };
+const options = {};
 
 const server = http.createServer(options, app);
 const MediasoupManager = require("./MediasoupManager");
+const startBroadcaster = require("./broadcaster");
 
 let io = require("socket.io")();
 io.listen(server, {
@@ -27,7 +30,7 @@ const distFolder = process.cwd() + "/dist";
 console.log("Serving static files at ", distFolder);
 app.use(express.static(process.cwd() + "/dist"));
 
-const port = 443;
+const port = 8080;
 server.listen(port);
 console.log(`Server listening on port ${port}`);
 
@@ -164,7 +167,12 @@ function setupSocketServer() {
 
 function main() {
   let mediasoupManager = new MediasoupManager(io);
+
+  setTimeout(() => {
+    mediasoupManager.addServerSideBroadcaster();
+  },2000)
   setupSocketServer();
+  // startBroadcaster();
 }
 
 main();
