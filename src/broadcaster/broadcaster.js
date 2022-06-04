@@ -5,7 +5,8 @@ let socket;
 let mediasoupPeer;
 let localCam;
 
-let url = "https://afewdeepbreaths.livelab.app";
+let url = "localhost:8080"
+// let url = "https://afewdeepbreaths.livelab.app";
 
 let videoEncodings = [
 	{ scaleResolutionDownBy: 4, maxBitrate: 500000 },

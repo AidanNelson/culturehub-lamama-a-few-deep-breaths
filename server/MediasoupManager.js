@@ -233,23 +233,32 @@ class MediasoupManager {
   }
 
   async addServerSideBroadcaster() {
-    this.peers["serverSideBroadcaster"] = {
+
+    const producingPeerId = "serverSideBroadcaster";
+    this.peers[producingPeerId] = {
       routerIndex: this.getNewPeerRouterIndex(),
       transports: {},
       producers: {},
       consumers: {},
     };
     console.log(this.peers);
-    const r = this.getRouterForPeer("serverSideBroadcaster");
-    console.log(r);
+    const r = this.getRouterForPeer(producingPeerId);
+    // console.log(r);
     const transport = await r.createPlainTransport(
       {
         listenIp: config.mediasoup.plainTransportOptions.listenIp.ip,
-        rtcpMux: true,
+        rtcpMux: false,
         comedia: true
       });
-    console.log(transport.tuple);
-    console.log(transport.rtcpTuple);
+    console.log("Transport Tuple:",transport.tuple);
+    console.log("Transport RTCP Tuple:",transport.rtcpTuple);
+
+    const appData = {
+      broadcast:true,
+      label:"serverSideBroadcast",
+      peerId: producingPeerId
+    }
+
     const producer = await transport.produce({
       kind: "video",
       rtpParameters:
@@ -268,9 +277,17 @@ class MediasoupManager {
           [
             {ssrc:2222}
           ],
-      }
+      },
+      appData
     });
-    console.log(producer);
+
+
+    this.peers[producingPeerId].producers[producer.id] = {};
+    this.peers[producingPeerId].producers[producer.id][
+      this.peers[producingPeerId].routerIndex
+    ] = producer;
+    // console.log(producer);
+    // setInterval(producer)
   }
 
   async startMediasoupWorker() {

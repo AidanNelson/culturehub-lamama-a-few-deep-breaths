@@ -6,7 +6,8 @@ CultureHub & LaMaMa ETC, May 2022
 import { io } from "socket.io-client";
 import { SimpleMediasoupPeer } from "../libs/SimpleMediasoupPeer";
 
-let url = "https://afewdeepbreaths.livelab.app";
+let url = "localhost:8080"
+// let url = "https://afewdeepbreaths.livelab.app";
 let socket;
 let mediasoupPeer;
 
